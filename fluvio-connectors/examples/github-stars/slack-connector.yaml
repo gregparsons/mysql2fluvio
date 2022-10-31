@@ -1,0 +1,8 @@
+name: github-stars-output
+type: slack-sink
+topic: github-stars
+version: latest
+create_topic: true
+parameters:
+  webhook-url: '<YOUR SLACK TOKEN HERE>'
+  filter-map: 'star-display'

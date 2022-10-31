@@ -1,0 +1,54 @@
+{
+    "Default": {
+        "CustomSpu": [
+            "All"
+        ],
+        "Spu": [
+            "All"
+        ],
+        "Topic": [
+            "Read"
+        ],
+        "Partition": [
+            "Read"
+        ],
+        "SpuGroup": [
+            "All"
+        ],
+        "ManagedConnector": [
+            "All"
+        ],
+        "SmartModule": [
+            "All"
+        ],
+        "TableFormat": [
+            "All"
+        ]
+    },
+    "Root": {
+        "CustomSpu": [
+            "All"
+        ],
+        "Partition": [
+            "All"
+        ],
+        "Spu": [
+            "All"
+        ],
+        "Topic": [
+            "All"
+        ],
+        "SpuGroup": [
+            "All"
+        ],
+        "ManagedConnector": [
+            "All"
+        ],
+        "SmartModule": [
+            "All"
+        ],
+        "TableFormat": [
+            "All"
+        ]
+    }
+}

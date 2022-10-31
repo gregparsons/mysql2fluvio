@@ -1,0 +1,38 @@
+name: 'fluvio'
+description: 'Installs Fluvio CLI from source with required dependencies (e.g. Helm, Rust) and starts a Local Cluster. Used for developing fluvio.'
+inputs:
+  spus:  # number of SPUs
+    description: 'number of SPUs to create for local cluster'
+    required: false
+    default: "1"
+  cluster-type:
+    description: 'Type of cluster (i.e. local or kubernetes)'
+    required: true
+    default: 'local'
+  rust-log:
+    description: "Add rust log options (e.g. debug, warn, info)"
+    required: false
+    default: 'warn'
+  version:
+    description: "Use a specific version of the fluvio CLI (e.g. latest, 0.6.0)"
+    required: false
+    # Blank default will use stable
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - id: set-environment-variables
+      run: |
+        echo "SPU_NUMBER=${{ inputs.spus }}" >> $GITHUB_ENV
+        echo "CLUSTER_TYPE=${{ inputs.cluster-type }}" >> $GITHUB_ENV
+        echo "RUST_LOG=${{ inputs.rust-log }}" >> $GITHUB_ENV
+        echo "VERSION=${{ inputs.version }}" >> $GITHUB_ENV
+        echo "OS=${{ runner.os }}" >> $GITHUB_ENV
+      shell: bash
+    - id: install-fluvio
+      run: ${{ github.action_path }}/actions/action-install-fluvio-cluster.sh
+      shell: bash
+    - id: set-fluvio-path
+      shell: bash
+      run: |
+        echo "$HOME/.fluvio/bin" >> $GITHUB_PATH

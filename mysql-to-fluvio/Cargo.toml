@@ -1,0 +1,14 @@
+
+[workspace]
+members = [
+    "crates/cat-mysql",
+    "crates/kafka-client-rust"
+#    "crates/fluvio-connectors"
+]
+
+[package]
+name = "mysql-to-fluvio"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]

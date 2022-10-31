@@ -1,0 +1,10 @@
+---
+package_format_version: "0.1"
+name: json-sql
+version: 0.1.0
+group: infinyon
+description: JSON to SQL transformation Smartmodule
+license: Apache2
+manifest:
+  - "./SmartModule.toml"
+  - ../../target/wasm32-unknown-unknown/release-lto/json_sql.wasm

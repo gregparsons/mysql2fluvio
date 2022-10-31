@@ -1,0 +1,6 @@
+#!/bin/sh
+ARG1=${1}
+ARG2=${2}
+ARG3=${3}
+
+RUST_LOG=kf=trace,fluvio=trace cargo run --bin  fluvio-spu -- -i "$ARG1" -p 0.0.0.0:"$ARG2" -v 0.0.0.0:"$ARG3"

@@ -1,0 +1,69 @@
+[package]
+name = "fluvio-test"
+version = "0.0.0"
+authors = ["Fluvio Contributors <team@fluvio.io>"]
+edition = "2021"
+autotests = false
+description = "Fluvio Test Utility"
+repository = "https://github.com/infinyon/fluvio"
+license = "Apache-2.0"
+publish = false
+
+[dependencies]
+tracing = "0.1"
+bytes = "1.0"
+futures-lite = "1.11.0"
+futures = "0.3"
+clap = { version = "4.0.9", features = [
+    "std",
+    "derive",
+], default-features = false }
+async-trait = "0.1.21"
+rand = "0.8"
+# Cryptographically secure rand is unnecessary and slow enough to affect for benchmark testing
+fastrand = "1.8.0"
+md-5 = "0.10"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+serde_yaml = "0.9"
+inventory = "0.3"
+tokio = { version = "1.4", features = ["macros"] }
+comfy-table = "6.0.0"
+hdrhistogram = "7.3.0"
+crc = "3.0"
+fork = "0.1"
+nix = "0.25"
+crossbeam-channel = "0.5"
+sysinfo = { version = "0.26.0" }
+signal-hook = "0.3.13"
+indicatif = "0.17.0"
+async-std = { version = "1.8.0", default-features = false, features = [
+    "attributes",
+] }
+uuid = { version = "1.1", features = ["serde", "v4"] }
+async-channel = "1.6"
+
+# Fluvio dependencies
+fluvio = { path = "../fluvio" }
+fluvio-types = { path = "../fluvio-types" }
+fluvio-future = { version = "0.4.0", features = [
+    "io",
+    "task",
+    "timer",
+    "subscriber",
+    "fixture",
+] }
+fluvio-command = { version = "0.2.0" }
+fluvio-cluster = { path = "../fluvio-cluster" }
+fluvio-cli = { path = "../fluvio-cli" }
+fluvio-controlplane-metadata = { features = [
+    "k8",
+], path = "../fluvio-controlplane-metadata" }
+
+# Fluvio test framework Attribute macro
+fluvio-test-derive = { path = "../fluvio-test-derive" }
+fluvio-test-util = { path = "../fluvio-test-util" }
+fluvio-protocol = { path = "../fluvio-protocol", features = ["api"] }
+
+# Fluvio test framework Options derive
+fluvio-test-case-derive = { path = "../fluvio-test-case-derive" }

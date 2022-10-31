@@ -1,0 +1,2 @@
+#!/bin/sh
+RUST_LOG=kf=trace,fluvio=trace cargo run --bin  fluvio-sc-k8 -- $@

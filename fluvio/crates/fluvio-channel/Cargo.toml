@@ -1,0 +1,29 @@
+[package]
+name = "fluvio-channel"
+version = "0.0.0"
+edition = "2021"
+authors = ["Fluvio Contributors <team@fluvio.io>"]
+description = "Fluvio channels support"
+repository = "https://github.com/infinyon/fluvio"
+license = "Apache-2.0"
+publish = false
+
+[lib]
+name = "fluvio_channel"
+path = "src/lib.rs"
+
+[features]
+default = ["fluvio-types"]
+
+[dependencies]
+clap = { version = "4.0.9", features = ["std", "derive", "help", "usage", "error-context"], default-features = false }
+cfg-if = "1.0"
+semver = "1.0.0"
+thiserror = "1.0.20"
+tracing = "0.1.19"
+dirs = "4.0.0"
+toml = "0.5.5"
+serde = { version = "1.0.118", features = ["derive"] }
+color-eyre = { version = "0.6.0", default-features = false }
+
+fluvio-types = { path = "../fluvio-types", default-features = false, optional = true }

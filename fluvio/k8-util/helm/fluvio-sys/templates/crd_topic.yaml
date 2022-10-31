@@ -1,0 +1,188 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: topics.fluvio.infinyon.com
+spec:
+  group: fluvio.infinyon.com
+  scope: Namespaced
+  names:
+    kind: Topic
+    plural: topics
+    singular: topic
+  versions: 
+    - name: v1
+      served: false
+      storage: false
+      deprecated: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          required: ["spec"]
+          properties:
+            status:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+            spec:
+              type: object
+              properties:
+                type:
+                  type: string
+                partitions:
+                  type: integer
+                  minimum: 1
+                  maximum: 5000
+                replicationFactor:
+                  type: integer
+                  minimum: 1
+                  maximum: 5000
+                ignoreRackAssignment:
+                  type: boolean
+                customReplicaAssignment:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                    - partition
+                    properties:
+                      partition:
+                        type: object
+                        required:
+                        - id
+                        - replicas
+                        properties:
+                          id:
+                            type: integer
+                            minimum: 0
+                          replicas:
+                            type: array
+                            items:
+                              type: integer
+                              minimum: 0
+      
+      subresources:
+          status: {}
+      additionalPrinterColumns:
+          - name: Partitions
+            type: integer
+            description: Partition count
+            jsonPath: .spec.partitions
+          - name: Replications
+            type: integer
+            description: Replication Count
+            jsonPath: .spec.replicationFactor
+          - name: Status
+            type: string
+            description: Topic Status
+            jsonPath: .status.resolution
+    - name: v2
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          required: ["spec"]
+          properties:
+            status:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+            spec:
+              type: object
+              properties:
+                replicas:
+                  type: object
+                  properties:
+                    computed:
+                      type: object
+                      properties:
+                        partitions:
+                          type: integer
+                          minimum: 1
+                          maximum: 5000
+                        replicationFactor:
+                          type: integer
+                          minimum: 1
+                          maximum: 5000
+                        ignoreRackAssignment:
+                          type: boolean
+                    assigned:
+                      type: array
+                      items:
+                        type: object
+                        required:
+                        - partition
+                        properties:
+                          partition:
+                            type: object
+                            required:
+                            - id
+                            - replicas
+                            properties:
+                              id:
+                                type: integer
+                                minimum: 0
+                              replicas:
+                                type: array
+                                items:
+                                  type: integer
+                                  minimum: 0
+                  oneOf:
+                    - required: ["computed"]
+                    - required: ["assigned"]
+                cleanupPolicy:
+                  type: object
+                  properties:
+                    segment:
+                      type: object
+                      properties:
+                        timeInSeconds:
+                          type: integer
+                          minimum: 10
+                compressionType:
+                  type: string
+                  enum:
+                    - Any
+                    - Gzip
+                    - Snappy
+                    - Lz4
+                storage:
+                  type: object
+                  properties:
+                    segmentSize:
+                      type: integer
+                      minimum: 1024               
+                    maxPartitionSize:
+                      type: integer
+                      minimum: 2048
+      subresources:
+          status: {}
+      additionalPrinterColumns:
+          - name: Partitions
+            type: integer
+            description: Partition count
+            jsonPath: .spec.replica.managed.partitions
+          - name: Replications
+            type: integer
+            description: Replication Count
+            jsonPath: .spec.replica.managed.replicationFactor
+          - name: Retention(secs)
+            type: integer
+            description: Retention hours
+            jsonPath: .spec.cleanupPolicy.segment.timeInSeconds
+          - name: Status
+            type: string
+            description: Topic Status
+            jsonPath: .status.resolution
+          - name: Segment Size
+            type: integer
+            description: Segment Size
+            jsonPath: .spec.storage.segmentSize
+          - name: Max Partition Size
+            type: integer
+            description: Max Partition Size
+            jsonPath: .spec.storage.maxPartitionSize
+  conversion:
+    # None conversion assumes the same schema for all versions and only sets the apiVersion
+    # field of custom resources to the proper value
+    strategy: None
+                   
+

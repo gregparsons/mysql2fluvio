@@ -1,0 +1,2 @@
+#!/bin/sh
+RUST_LOG=kf=debug,fluvio=debug  cargo run --bin  fluvio-sc-k8 -- $@

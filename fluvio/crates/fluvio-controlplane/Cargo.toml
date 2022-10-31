@@ -1,0 +1,22 @@
+[package]
+name = "fluvio-controlplane"
+version = "0.0.0"
+edition = "2021"
+license = "Apache-2.0"
+description = "API for Fluvio Control Plane"
+authors = ["fluvio.io"]
+repository = "https://github.com/infinyon/fluvio"
+publish = false
+
+[lib]
+name = "fluvio_controlplane"
+path = "src/lib.rs"
+
+[dependencies]
+log = "0.4.8"
+tracing = "0.1.19"
+
+# Fluvio dependencies
+fluvio-types = { path = "../fluvio-types" }
+fluvio-controlplane-metadata = { path = "../fluvio-controlplane-metadata" }
+fluvio-protocol = { path = "../fluvio-protocol", features = ["api"]}

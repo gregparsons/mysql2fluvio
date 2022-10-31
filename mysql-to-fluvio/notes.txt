@@ -1,0 +1,204 @@
+
+
+# idempotent test
+
+cargo run --package fluvio-cli -- cluster delete
+cargo run --package fluvio-cli -- cluster start --local
+cargo run --package fluvio-cli -- cluster start --local
+
+
+# 1. Build w/ make; run local
+
+git pull origin master
+make clean
+make -C k8-util/helm clean
+make build-cli
+make build-cli RELEASE=true
+make build-cluster
+./target/debug/fluvio cluster delete
+./target/debug/fluvio cluster start --local --develop
+./target/debug/fluvio version
+./target/debug/fluvio topic create greeting
+echo "hi" | ./target/debug/fluvio produce greeting
+echo "bye" | ./target/debug/fluvio produce greeting
+# avoid clap panic
+./target/release/fluvio consume greeting -B -d
+./target/debug/fluvio cluster delete
+
+
+# 2. Build w/o make; run local
+# git clone https://github.com/infinyon/fluvio.git
+git pull origin master
+make clean
+make -C k8-util/helm clean
+
+cargo run --package fluvio-cli -- cluster delete
+cargo run --package fluvio-cli -- cluster start --proxy-addr localhost --local
+cargo run --package fluvio-cli -- version
+
+cargo run --package fluvio-cli -- topic create greeting
+echo "hi" | cargo run --package fluvio-cli -- produce greeting
+echo "bye" | cargo run --package fluvio-cli -- produce greeting
+# need release to avoid clap panic in debug version of consume
+cargo run --package fluvio-cli --release -- consume greeting -B -d
+cargo run --package fluvio-cli -- cluster delete
+
+
+
+
+# 3: # run in rancher like macos demo--working 10/24/2022
+
+# git clone https://github.com/infinyon/fluvio.git
+git pull origin master
+make clean
+make -C k8-util/helm clean
+export FLUVIO_BUILD_LLD=/usr/local/bin/lld
+# make build-cli build_k8_image
+make build_k8_image
+
+cargo run --package fluvio-cli -- cluster delete
+
+cargo run --package fluvio-cli -- cluster start --proxy-addr localhost --develop
+# if 2: Timed out when waiting for SC deployment, make build_k8_image (to build the docker image, perhaps)
+
+
+cargo run --package fluvio-cli -- version
+cargo run --package fluvio-cli -- topic create greeting
+echo "hi" | cargo run --package fluvio-cli -- produce greeting
+echo "bye" | cargo run --package fluvio-cli -- produce greeting
+# need release to avoid clap panic in debug version of consume
+cargo run --package fluvio-cli --release -- consume greeting -B -d
+helm list
+cargo run --package fluvio-cli -- cluster delete
+helm list
+
+
+
+
+# 4a. connectors: managed; works fine per doc
+
+# https://www.fluvio.io/connectors/
+
+# *********** end managed connector, works with modified cluster start using installed fluvio *****
+# Using the installed release version works:
+cluster start --proxy-addr localhost
+
+echo '
+# connect.yml
+version: 0.3.0
+name: cat-facts
+type: http-source
+topic: cat-facts
+direction: source
+parameters:
+  endpoint: https://catfact.ninja/fact
+  interval: 2s
+' > ../connect.yml
+
+fluvio connector create --config=../connect.yml
+
+fluvio connector list
+fluvio consume cat-facts -B -d
+fluvio connector delete cat-facts
+# *********** end managed connector, works with modified cluster start using installed fluvio *****
+
+
+
+# 4b. connectors: managed; from source
+# https://www.fluvio.io/news/this-week-in-fluvio-0047/
+# git clone https://github.com/infinyon/fluvio-connectors.git
+
+
+error:
+Unable to find plugin 'fluvio-connector'. Make sure it is installed in "/Users/glp/.fluvio/extensions".
+
+    /// Search for a Fluvio plugin in the following places:
+    ///
+    /// - In the system PATH
+    /// - In the directory where the `fluvio` executable is located
+    /// - In the `~/.fluvio/extensions/` directory
+
+
+    /// The Fluvio CLI considers any executable with the prefix `fluvio-` to be a
+    /// CLI plugin. For example, an executable named `fluvio-foo` in your PATH may
+    /// be invoked by running `fluvio foo`.
+
+
+
+
+
+
+
+
+*********
+
+5. run cat http connector from source
+
+
+# connect.yml
+version: 0.3.0
+name: cat-facts
+type: http-source
+topic: cat-facts
+direction: source
+parameters:
+  endpoint: https://catfact.ninja/fact
+  interval: 10s
+
+
+
+
+# start the cluster
+cd fluvio
+make build_k8_image
+cargo run --package fluvio-cli -- cluster start --proxy-addr localhost --develop
+
+# from the makefile
+# https://github.com/infinyon/fluvio-connectors/blob/main/rust-connectors/sources/http/Makefile
+
+# cat facts source
+git clone https://github.com/infinyon/fluvio-connectors.git
+cd fluvio-connectors/rust-connectors/sources/http
+cargo run --bin http-source --package http-source -- --fluvio-topic=cat-facts --endpoint=https://catfact.ninja/fact --interval=2s
+
+# watch...
+cd ../fluvio
+cargo run --package fluvio-cli --release -- consume cat-facts -B -d
+
+
+
+
+*********
+
+6. run kafka source connector
+
+# docker: deadend complexity
+# docker build -t kafka-mysql .
+# docker run  --net cats_default -v /Users/glp/.fluvio:/root/.fluvio kafka-mysql
+
+
+# seems to work but times out
+cargo run --bin kafka-source --package kafka-source -- --kafka-url cats-kafka-1:9092 --kafka-topic catserver01.cat.facts --fluvio-topic catfact
+
+
+#
+cargo run --package fluvio-cli --release -- consume catfact -B -d
+
+
+
+# this works for my old kafka-rust client with "cats-kafka-1:9092" as the broker
+docker build -t kafka-client-rust .
+docker run --net cats_default kafka-client-rust
+
+
+
+
+
+
+
+
+
+
+
+
+
