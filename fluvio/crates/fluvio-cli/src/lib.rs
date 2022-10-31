@@ -1,3 +1,5 @@
+//! crates/fluvio-cli/src/lib.rs
+//!
 //! # Root CLI
 //!
 //! CLI configurations at the top of the tree

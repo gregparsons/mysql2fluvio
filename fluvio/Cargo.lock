@@ -2026,7 +2026,6 @@ dependencies = [
  "futures-util",
  "once_cell",
  "pin-project-lite",
- "rand 0.8.5",
  "semver 1.0.14",
  "serde",
  "serde_json",

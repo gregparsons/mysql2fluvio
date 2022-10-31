@@ -13,23 +13,30 @@ pub enum ClusterCliError {
     /// An IO error occurred, such as opening a file or running a command
     #[error(transparent)]
     IoError(#[from] IoError),
+
     /// Error printing command output
     #[error("Output Error")]
     OutputError(#[from] OutputError),
+
     /// Error building Fluvio configuration from CLI arguments
     #[error("Target Error")]
     TargetError(#[from] TargetError),
+
     /// An error occurred with a cluster operation
     #[error(transparent)]
     ClusterError(#[from] ClusterError),
+
     /// An error occurred while communicating with Fluvio
     #[error("Fluvio client error")]
     ClientError(#[from] FluvioError),
+
     /// Another type of error
     #[error("Unknown error: {0}")]
     Other(String),
+
     #[error(transparent)]
     ClusterCheckError(#[from] ClusterCheckError),
+
     #[error(transparent)]
     LocalInstallError(#[from] LocalInstallError),
 }

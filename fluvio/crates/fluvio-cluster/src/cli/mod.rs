@@ -1,3 +1,7 @@
+//! crates/fluvio-cluster/src/cli/mod.rs
+//! struct CusterCmd
+//!
+
 use std::sync::Arc;
 
 use clap::ValueEnum;
@@ -84,7 +88,31 @@ impl ClusterCmd {
         target: ClusterTarget,
     ) -> Result<(), ClusterCliError> {
         match self {
-            Self::Start(mut start) => {
+
+
+
+            // ***** 'fluvio cluster start' *****
+            Self::Start(mut start_opt) => {
+
+
+                // dummies idempotent; do a delete every time.
+                // perform 'fluvio cluster delete'
+                // all three have to be false in order to get a proper delete
+
+                // ***GP ***
+
+                let delete_opt = DeleteOpt{
+                    namespace: None, // Some("Kubernetes namespace".to_string()),
+                    local: false,
+                    k8: false,
+                    sys: false
+                };
+                /*let _ = */delete_opt.process().await?;
+
+
+
+
+
                 if let Ok(tag_strategy_value) = std::env::var(FLUVIO_IMAGE_TAG_STRATEGY) {
                     let tag_strategy = ImageTagStrategy::from_str(&tag_strategy_value, true)
                         .unwrap_or(ImageTagStrategy::Version);
@@ -95,17 +123,36 @@ impl ClusterCmd {
                         ImageTagStrategy::VersionGit => {
                             let image_version = format!("{}-{}", VERSION, env!("GIT_HASH"));
                             debug!("Using image version: {:?}", &image_version);
-                            start.k8_config.image_version = Some(image_version);
+                            start_opt.k8_config.image_version = Some(image_version);
                         }
                         ImageTagStrategy::Git => {
                             debug!("Using developer image version: {}", env!("GIT_HASH"));
-                            start.develop = true
+                            start_opt.develop = true
                         }
                     }
                 };
 
-                start.process(platform_version, false).await?;
+                // if cluster is started, delete, then start
+                /*let _result: Result<(), ClusterCliError> = */ start_opt.process((&platform_version).clone(), false).await?;
+            //     match result {
+            //         Ok(_)=> (),
+            //         Err(e)=>{
+            //             match e {
+            //                 _ => {
+            //
+            //                     // perform 'fluvio cluster delete'
+            //                     let mut delete_opt = DeleteOpt::default();
+            //                     delete_opt.local = true;
+            //                     let _ = delete_opt.process().await?;
+            //
+            //                     // re-try this 'fluvio cluster start --local'
+            //                     let _ = (&start_opt).process(platform_version, false).await;
+            //                 }
+            //             }
+            //         }
+            //     }
             }
+
             Self::Upgrade(mut upgrade) => {
                 if let Ok(tag_strategy_value) = std::env::var(FLUVIO_IMAGE_TAG_STRATEGY) {
                     let tag_strategy = ImageTagStrategy::from_str(&tag_strategy_value, true)
@@ -121,24 +168,27 @@ impl ClusterCmd {
                 };
 
                 upgrade.process(platform_version).await?;
-            }
+            },
+
+            // ***** 'fluvio cluster delete' *****
             Self::Delete(uninstall) => {
                 uninstall.process().await?;
-            }
+            },
+
             Self::Check(check) => {
                 check.process(platform_version).await?;
-            }
+            },
             Self::SPU(spu) => {
                 let fluvio = target.connect().await?;
                 spu.process(out, &fluvio).await?;
-            }
+            },
             Self::SPUGroup(group) => {
                 let fluvio = target.connect().await?;
                 group.process(out, &fluvio).await?;
-            }
+            },
             Self::Diagnostics(opt) => {
                 opt.process().await?;
-            }
+            },
         }
 
         Ok(())

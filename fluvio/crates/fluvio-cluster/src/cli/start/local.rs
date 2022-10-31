@@ -1,3 +1,7 @@
+//! crates/fluvio-cluster/src/cli/start/local.rs
+//! --called from StartOpt.process() in cli/start/mod.rs
+
+
 use std::convert::TryInto;
 use semver::Version;
 
@@ -18,6 +22,7 @@ pub async fn process_local(
     platform_version: Version,
 ) -> Result<(), ClusterCliError> {
     let mut builder = LocalConfig::builder(platform_version);
+
     builder
         .log_dir(opt.log_dir.to_string())
         .spu_replicas(opt.spu)
@@ -41,11 +46,20 @@ pub async fn process_local(
     }
 
     let config = builder.build()?;
+
     let installer = LocalInstaller::from_config(config);
+
     if opt.setup {
         setup_local(&installer).await?;
     } else {
+
+
+
         install_local(&installer).await?;
+
+
+
+
     }
 
     Ok(())

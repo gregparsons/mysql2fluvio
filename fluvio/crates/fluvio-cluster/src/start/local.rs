@@ -180,11 +180,13 @@ impl LocalConfig {
     /// ```
     pub fn builder(platform_version: Version) -> LocalConfigBuilder {
         let mut builder = LocalConfigBuilder::default();
+
         builder.platform_version(platform_version);
 
         if let Some(data_dir) = &*DEFAULT_DATA_DIR {
             builder.data_dir(data_dir);
         }
+
         builder
     }
 
@@ -364,6 +366,7 @@ impl LocalInstaller {
 
         self.pb_factory
             .println(InstallProgressMessage::PreFlightCheck.msg());
+
         ClusterChecker::empty()
             .with_local_checks()
             .with_check(SysChartCheck::new(
@@ -380,7 +383,17 @@ impl LocalInstaller {
     pub async fn install(&self) -> Result<StartStatus, LocalInstallError> {
         if !self.config.skip_checks {
             self.preflight_check(true).await?;
+
+
+
+
+
+
+
+
+
         };
+
         use k8_client::load_and_share;
 
         let pb = self.pb_factory.create()?;
@@ -482,9 +495,11 @@ impl LocalInstaller {
     #[instrument(skip(self))]
     fn set_profile(&self) -> Result<(), LocalInstallError> {
         let pb = self.pb_factory.create()?;
+
         pb.set_message(format!("Creating Local Profile to: {}", LOCAL_SC_ADDRESS));
 
         let mut config_file = ConfigFile::load_default_or_new()?;
+
         config_file.add_or_replace_profile(
             LOCAL_PROFILE,
             LOCAL_SC_ADDRESS,

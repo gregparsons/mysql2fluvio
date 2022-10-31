@@ -85,9 +85,16 @@ pub enum ClusterCheckError {
     #[error("Could not parse Version")]
     VersionError(#[from] semver::Error),
 
+
+
+
     /// local fluvio exists
-    #[error("Loocal Fluvio running")]
+    /// This is not what gets returned if a local instance is already running.
+    #[error("Local Fluvio running")]
     LocalClusterExists,
+
+
+
 
     /// Other misc
     #[error("Other failure: {0}")]
@@ -216,8 +223,25 @@ pub enum UnrecoverableCheckStatus {
     #[error("Cannot have multiple versions of fluvio-sys installed")]
     MultipleSystemCharts,
 
+
+
+
+
+
+
+
+
+    /// Occurs when a local install is already running
     #[error("Fluvio chart is already installed")]
     AlreadyInstalled,
+
+
+
+
+
+
+
+
 
     /// The current kubernetes cluster must have a server hostname
     #[error("Missing Kubernetes server host")]

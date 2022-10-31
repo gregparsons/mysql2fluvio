@@ -1,3 +1,7 @@
+//! crates/fluvio-cluster/src/cli/start/mod.rs
+//! struct StartOpt
+//!
+
 use std::{fmt, str::FromStr};
 use std::path::PathBuf;
 use fluvio_controlplane_metadata::spg::{SpuConfig, StorageConfig};
@@ -105,6 +109,7 @@ pub struct K8Install {
 
 #[derive(Debug, Parser)]
 pub struct StartOpt {
+
     /// use local image
     #[clap(long)]
     pub develop: bool,
@@ -147,6 +152,7 @@ pub struct StartOpt {
     /// Whether to skip pre-install checks, defaults to false
     #[clap(long)]
     pub skip_checks: bool,
+
     /// Tries to setup necessary environment for cluster startup
     #[clap(long)]
     pub setup: bool,
@@ -165,6 +171,7 @@ pub struct StartOpt {
 }
 
 impl StartOpt {
+
     pub async fn process(
         self,
         platform_version: Version,
@@ -173,7 +180,6 @@ impl StartOpt {
         use crate::cli::start::local::process_local;
         use crate::cli::start::sys::process_sys;
         use crate::cli::start::k8::process_k8;
-
         if self.sys_only {
             process_sys(&self, upgrade)?;
         } else if self.local {
@@ -181,7 +187,6 @@ impl StartOpt {
         } else {
             process_k8(self, platform_version, upgrade).await?;
         }
-
         Ok(())
     }
 }

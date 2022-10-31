@@ -3,22 +3,22 @@ use clap::Parser;
 use crate::delete::ClusterUninstallConfig;
 use crate::cli::ClusterCliError;
 
-#[derive(Debug, Parser)]
+#[derive(Debug, Parser, Default)]
 pub struct DeleteOpt {
     #[clap(long, value_name = "Kubernetes namespace")]
-    namespace: Option<String>,
+    pub(crate) namespace: Option<String>,
 
     /// Remove only local spu/sc(custom) fluvio installation
     #[clap(long, conflicts_with = "k8", conflicts_with = "sys")]
-    local: bool,
+    pub local: bool,
 
     /// Remove only k8 fluvio installation
     #[clap(long, conflicts_with = "local", conflicts_with = "sys")]
-    k8: bool,
+    pub(crate) k8: bool,
 
     #[clap(long, conflicts_with = "k8", conflicts_with = "local")]
     /// delete system chart
-    sys: bool,
+    pub sys: bool,
 }
 
 impl DeleteOpt {
