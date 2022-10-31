@@ -4,7 +4,6 @@ target/
 .docker-cargo
 target-docker
 .idea/
-VERSION
 .scripts
 .env
 .vscode/
